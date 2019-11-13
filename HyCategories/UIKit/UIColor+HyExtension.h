@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,assign,readonly) uint32_t hy_rgbValue;
 @property (nonatomic,assign,readonly) uint32_t hy_rgbaValue;
 @property (nonatomic,copy,readonly,nullable) NSString *hy_hexString;
-@property (nonatomic,copy,readonly,nullable) NSString *hexStringWithAlpha;
+@property (nonatomic,copy,readonly,nullable) NSString *hy_hexStringWithAlpha;
 // HSB
 @property (nonatomic,assign,readonly) CGFloat hy_hue;
 @property (nonatomic,assign,readonly) CGFloat hy_saturation;
