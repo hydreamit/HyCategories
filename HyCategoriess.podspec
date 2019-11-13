@@ -1,5 +1,5 @@
 Pod::Spec.new do |s|
-s.name         = 'HyCategories'
+s.name         = 'HyCategoriess'
 s.version      = '1.0.0'
 s.summary      = 'HyCategories Lib Demo'
 s.homepage     = 'https://github.com/hydreamit/HyCategories'
