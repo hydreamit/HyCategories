@@ -83,7 +83,7 @@ static const int drawTextColorRect_key;
     if (!color) { return;}
 
     objc_setAssociatedObject(self, &drawTextColor_key, color, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    objc_setAssociatedObject(self, &drawTextColorProgress_key, [NSValue valueWithCGRect:rect], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    objc_setAssociatedObject(self, &drawTextColorRect_key, [NSValue valueWithCGRect:rect], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     [self setNeedsDisplay];
 }
 
