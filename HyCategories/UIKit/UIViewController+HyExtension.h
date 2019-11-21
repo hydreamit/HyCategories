@@ -34,23 +34,26 @@ typedef NS_ENUM(NSUInteger, HyPopGestureState) {
 @property (nonatomic,assign) HyPopGestureState  hy_popGestureState;
 @property (nonatomic,copy) void(^hy_reloadControllerBlock)(id params);
 
-@property (nonatomic,copy,nullable) BOOL(^hy_viewDidLoadBlock)(UIViewController *_self);
-@property (nonatomic,copy,nullable) BOOL(^hy_viewWillAppearBlock)(UIViewController *_self, BOOL animated);
-@property (nonatomic,copy,nullable) BOOL(^hy_viewWillLayoutSubviewsBlock)(UIViewController *_self);
-@property (nonatomic,copy,nullable) BOOL(^hy_viewDidLayoutSubviewsBlock)(UIViewController *_self);
-@property (nonatomic,copy,nullable) BOOL(^hy_viewDidAppearBlock)(UIViewController *_self, BOOL animated);
-@property (nonatomic,copy,nullable) BOOL(^hy_viewWillDisappearBlock)(UIViewController *_self, BOOL animated);
-@property (nonatomic,copy,nullable) BOOL(^hy_viewDidDisappearBlock)(UIViewController *_self, BOOL animated);
+@property (nonatomic,copy,nullable) void(^hy_viewDidLoadBlock)(UIViewController *_self);
+@property (nonatomic,copy,nullable) void(^hy_viewWillAppearBlock)(UIViewController *_self, BOOL animated, BOOL firstLoad);
+@property (nonatomic,copy,nullable) void(^hy_viewDidAppearBlock)(UIViewController *_self, BOOL animated, BOOL firstLoad);
+@property (nonatomic,copy,nullable) void(^hy_viewWillLayoutSubviewsBlock)(UIViewController *_self, BOOL firstLoad);
+@property (nonatomic,copy,nullable) void(^hy_viewDidLayoutSubviewsBlock)(UIViewController *_self, BOOL firstLoad);
+
+@property (nonatomic,copy,nullable) void(^hy_viewWillDisappearBlock)(UIViewController *_self, BOOL animated);
+@property (nonatomic,copy,nullable) void(^hy_viewDidDisappearBlock)(UIViewController *_self, BOOL animated);
 
 - (void)hy_viewDidLoad;
-- (void)hy_viewWillAppear:(BOOL)animated;
-- (void)hy_viewWillLayoutSubviews;
-- (void)hy_viewDidLayoutSubviews;
-- (void)hy_viewDidAppear:(BOOL)animated;
+- (void)hy_viewWillAppear:(BOOL)animated firstLoad:(BOOL)flag;
+- (void)hy_viewDidAppear:(BOOL)animated firstLoad:(BOOL)flag;
+- (void)hy_viewWillLayoutSubviewsIsFirstLoad:(BOOL)flag;
+- (void)hy_viewDidLayoutSubviewsIsFirstLoad:(BOOL)flag;
+
 - (void)hy_viewWillDisappear:(BOOL)animated;
 - (void)hy_viewDidDisappear:(BOOL)animated;
 
 + (nullable UIViewController *)hy_topViewController;
++ (nullable UIViewController *)hy_currentViewController;
 - (nullable UIViewController *)hy_childViewControllerWithName:(NSString *)name;
 
 @end

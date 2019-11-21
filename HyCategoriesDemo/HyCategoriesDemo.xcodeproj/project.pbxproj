@@ -141,6 +141,7 @@
 		5107C0692358012700265E2C /* NSObject+HyExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+HyExtension.m"; sourceTree = "<group>"; };
 		5107C06A2358012700265E2C /* HyRunTimeMethods.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HyRunTimeMethods.m; sourceTree = "<group>"; };
 		5107C06B2358012700265E2C /* HyRunTimeMethods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HyRunTimeMethods.h; sourceTree = "<group>"; };
+		51CF98CE2386465300207DB3 /* HyCategories.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HyCategories.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -228,6 +229,7 @@
 		5107C02E2358012700265E2C /* HyCategories */ = {
 			isa = PBXGroup;
 			children = (
+				51CF98CE2386465300207DB3 /* HyCategories.h */,
 				5107C06B2358012700265E2C /* HyRunTimeMethods.h */,
 				5107C06A2358012700265E2C /* HyRunTimeMethods.m */,
 				5107C02F2358012700265E2C /* UIKit */,
@@ -288,8 +290,8 @@
 				5107C0582358012700265E2C /* UIDevice+HyExtension.m */,
 				5107C0352358012700265E2C /* UIApplication+HyExtension.h */,
 				5107C04A2358012700265E2C /* UIApplication+HyExtension.m */,
-				5107C0432358012700265E2C /* UIBezierPath+HyExtension.m */,
 				5107C0612358012700265E2C /* UIBezierPath+HyExtension.h */,
+				5107C0432358012700265E2C /* UIBezierPath+HyExtension.m */,
 			);
 			path = UIKit;
 			sourceTree = "<group>";

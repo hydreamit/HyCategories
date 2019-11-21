@@ -66,7 +66,17 @@
                         responder = _self;
                     }
                 }
-                return responder ?: HyObjectImpFuctoin(_self, sel, point, event);
+                
+                if (responder) {
+                    return responder;
+                } else {
+                    IMP imp = impBlock();
+                    if (imp != NULL) {
+                       return ((UIView *(*)(id, SEL, CGPoint, UIEvent *))imp)(_self, sel, point, event);
+                    }
+                    return nil;
+                }
+//                return responder ?: HyObjectImpFuctoin(_self, sel, point, event);
             };
         });
     });

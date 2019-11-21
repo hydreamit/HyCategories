@@ -93,9 +93,9 @@
             
             if (state == HyPopGestureState_SuccessPop) {
                 [poppingViewController hy_viewWillDisappear:YES];
-                [popToViewController hy_viewWillAppear:YES];
-                [popToViewController hy_viewWillLayoutSubviews];
-                [popToViewController hy_viewDidLayoutSubviews];
+                [popToViewController hy_viewWillAppear:YES firstLoad:NO];
+                [popToViewController hy_viewWillLayoutSubviewsIsFirstLoad:NO];
+                [popToViewController hy_viewDidLayoutSubviewsIsFirstLoad:NO];
             }
             
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
@@ -103,7 +103,7 @@
                            dispatch_get_main_queue(), ^{
                                
                                [poppingViewController hy_viewDidDisappear:YES];
-                               [poppingViewController hy_viewDidAppear:YES];
+                               [poppingViewController hy_viewDidAppear:YES firstLoad:NO];
                                self.hy_poppingViewController = nil;
                                poppingViewController.hy_popGestureState =
                                popToViewController.hy_popGestureState = HyPopGestureState_No;

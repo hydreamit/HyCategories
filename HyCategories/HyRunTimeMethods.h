@@ -51,6 +51,7 @@ NSArray<NSString *> *hy_getMethodList(Class cls);
 NSArray<NSString *> *hy_getProtocolList(Class cls);
 
 
+BOOL hy_checkClass(NSString *className);
 BOOL hy_checkIvar(Class cls , NSString *ivar);
 BOOL hy_checkProperty(Class cls , NSString *property);
 BOOL hy_checkInstanceMethod(Class cls , SEL sel);

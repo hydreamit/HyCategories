@@ -36,6 +36,13 @@ static id _instance;
 }
 @end
 
+@interface UIViewController()
+@property (nonatomic, assign) BOOL hy_willAppearFirstLoad;
+@property (nonatomic, assign) BOOL hy_didAppearFirstLoad;
+@property (nonatomic, assign) BOOL hy_WillLayoutSubviewsFirstLoad;
+@property (nonatomic, assign) BOOL hy_didLayoutSubviewsFirstLoad;
+@end
+
 
 @implementation UIViewController (HyExtension)
 
@@ -58,7 +65,10 @@ static id _instance;
                 HyVoidImpFuctoin(_self, sel, animated);
                 
                 if (_self.hy_popGestureState == HyPopGestureState_No) {
-                    [_self hy_viewWillAppear:animated];
+                    [_self hy_viewWillAppear:animated firstLoad:_self.hy_willAppearFirstLoad];
+                    if (!_self.hy_willAppearFirstLoad) {
+                        _self.hy_willAppearFirstLoad = YES;
+                    }
                 }
             };
         });
@@ -69,7 +79,10 @@ static id _instance;
                 HyVoidImpFuctoin(_self, sel, animated);
 
                 if (_self.hy_popGestureState == HyPopGestureState_No) {
-                    [_self hy_viewDidAppear:animated];
+                    [_self hy_viewDidAppear:animated firstLoad:_self.hy_didAppearFirstLoad];
+                    if (!_self.hy_didAppearFirstLoad) {
+                        _self.hy_didAppearFirstLoad = YES;
+                     }
                 }
             };
         });
@@ -80,7 +93,10 @@ static id _instance;
                 HyVoidImpFuctoin(_self, sel);
                 
                 if (_self.hy_popGestureState == HyPopGestureState_No) {
-                    [_self hy_viewWillLayoutSubviews];
+                    [_self hy_viewWillLayoutSubviewsIsFirstLoad:_self.hy_WillLayoutSubviewsFirstLoad];
+                    if (!_self.hy_WillLayoutSubviewsFirstLoad) {
+                       _self.hy_WillLayoutSubviewsFirstLoad = YES;
+                    }
                 }
             };
         });
@@ -91,7 +107,10 @@ static id _instance;
                 HyVoidImpFuctoin(_self, sel);
                 
                 if (_self.hy_popGestureState == HyPopGestureState_No) {
-                    [_self hy_viewDidLayoutSubviews];
+                    [_self hy_viewDidLayoutSubviewsIsFirstLoad:_self.hy_didLayoutSubviewsFirstLoad];
+                    if (!_self.hy_didLayoutSubviewsFirstLoad) {
+                        _self.hy_didLayoutSubviewsFirstLoad = YES;
+                    }
                 }
             };
         });
@@ -125,55 +144,41 @@ static id _instance;
             return ^(UIViewController *_self){
                 
                 HyVoidImpFuctoin(_self, sel);
-                
-                if (_self.hy_viewDidLoadBlock && !_self.hy_viewDidLoadBlock(_self)) {
-                    _self.hy_viewDidLoadBlock = nil;
-                }
+                !_self.hy_viewDidLoadBlock ?: _self.hy_viewDidLoadBlock(_self);
             };
         });
         
-        hy_swizzleInstanceMethodToBlock([self class], @selector(hy_viewWillAppear:), ^id(SEL sel, IMP (^impBlock)(void)) {
-            return ^(UIViewController *_self, BOOL animated){
+        hy_swizzleInstanceMethodToBlock([self class], @selector(hy_viewWillAppear:firstLoad:), ^id(SEL sel, IMP (^impBlock)(void)) {
+            return ^(UIViewController *_self, BOOL animated, BOOL flag){
                 
-                HyVoidImpFuctoin(_self, sel, animated);
+                HyVoidImpFuctoin(_self, sel, animated, flag);
                 
                 [HyTopViewControllerManager sharedManager].hy_topViewController = _self;
-                if (_self.hy_viewWillAppearBlock && !_self.hy_viewWillAppearBlock(_self, animated)) {
-                    _self.hy_viewWillAppearBlock = nil;
-                }
+                !_self.hy_viewWillAppearBlock ?: _self.hy_viewWillAppearBlock(_self, animated, flag);
             };
         });
         
-        hy_swizzleInstanceMethodToBlock([self class], @selector(hy_viewWillLayoutSubviews), ^id(SEL sel, IMP (^impBlock)(void)) {
-            return ^(UIViewController *_self){
+        hy_swizzleInstanceMethodToBlock([self class], @selector(hy_viewWillLayoutSubviewsIsFirstLoad:), ^id(SEL sel, IMP (^impBlock)(void)) {
+            return ^(UIViewController *_self, BOOL flag){
                 
-                HyVoidImpFuctoin(_self, sel);
-                
-                if (_self.hy_viewWillLayoutSubviewsBlock && !_self.hy_viewWillLayoutSubviewsBlock(_self)) {
-                    _self.hy_viewWillLayoutSubviewsBlock = nil;
-                }
+                HyVoidImpFuctoin(_self, sel, flag);
+                !_self.hy_viewWillLayoutSubviewsBlock ?: _self.hy_viewWillLayoutSubviewsBlock(_self, flag);
             };
         });
         
-        hy_swizzleInstanceMethodToBlock([self class], @selector(hy_viewDidLayoutSubviews), ^id(SEL sel, IMP (^impBlock)(void)) {
-            return ^(UIViewController *_self){
+        hy_swizzleInstanceMethodToBlock([self class], @selector(hy_viewDidLayoutSubviewsIsFirstLoad:), ^id(SEL sel, IMP (^impBlock)(void)) {
+            return ^(UIViewController *_self, BOOL flag){
                 
-                HyVoidImpFuctoin(_self, sel);
-                
-                if (_self.hy_viewDidLayoutSubviewsBlock && !_self.hy_viewDidLayoutSubviewsBlock(_self)) {
-                    _self.hy_viewDidLayoutSubviewsBlock = nil;
-                }
+                HyVoidImpFuctoin(_self, sel, flag);
+                !_self.hy_viewDidLayoutSubviewsBlock ?: _self.hy_viewDidLayoutSubviewsBlock(_self, flag);
             };
         });
         
-        hy_swizzleInstanceMethodToBlock([self class], @selector(hy_viewDidAppear:), ^id(SEL sel, IMP (^impBlock)(void)) {
-            return ^(UIViewController *_self, BOOL animated){
+        hy_swizzleInstanceMethodToBlock([self class], @selector(hy_viewDidAppear:firstLoad:), ^id(SEL sel, IMP (^impBlock)(void)) {
+            return ^(UIViewController *_self, BOOL animated, BOOL flag){
                 
-                HyVoidImpFuctoin(_self, sel, animated);
-             
-                if (_self.hy_viewDidAppearBlock && !_self.hy_viewDidAppearBlock(_self, animated)) {
-                    _self.hy_viewDidAppearBlock = nil;
-                }
+                HyVoidImpFuctoin(_self, sel, animated, flag);
+                !_self.hy_viewDidAppearBlock ?: _self.hy_viewDidAppearBlock(_self, animated, flag);
             };
         });
         
@@ -182,10 +187,7 @@ static id _instance;
             return ^(UIViewController *_self, BOOL animated){
                 
                 HyVoidImpFuctoin(_self, sel, animated);
-                
-                if (_self.hy_viewWillDisappearBlock && !_self.hy_viewWillDisappearBlock(_self, animated)) {
-                    _self.hy_viewWillDisappearBlock = nil;
-                }
+                !_self.hy_viewWillDisappearBlock ?: _self.hy_viewWillDisappearBlock(_self, animated);
             };
         });
         
@@ -194,10 +196,7 @@ static id _instance;
             return ^(UIViewController *_self, BOOL animated){
                 
                 HyVoidImpFuctoin(_self, sel, animated);
-                
-                if (_self.hy_viewDidDisappearBlock && !_self.hy_viewDidDisappearBlock(_self, animated)) {
-                    _self.hy_viewDidDisappearBlock = nil;
-                }
+                !_self.hy_viewDidDisappearBlock ?: _self.hy_viewDidDisappearBlock(_self, animated);
             };
         });
     });
@@ -205,6 +204,25 @@ static id _instance;
 
 + (UIViewController *)hy_topViewController {
     return [HyTopViewControllerManager sharedManager].hy_topViewController;
+}
+
++ (UIViewController *)hy_currentViewController {
+    
+       UIViewController* vc = [UIApplication sharedApplication].keyWindow.rootViewController;
+       while (1) {
+         if ([vc isKindOfClass:[UITabBarController class]]) {
+             vc = ((UITabBarController*)vc).selectedViewController;
+         }
+         if ([vc isKindOfClass:[UINavigationController class]]) {
+             vc = ((UINavigationController*)vc).visibleViewController;
+         }
+         if (vc.presentedViewController) {
+             vc = vc.presentedViewController;
+         }else{
+            break;
+         }
+       }
+       return vc;
 }
 
 - (nullable UIViewController *)hy_childViewControllerWithName:(NSString *)name {
@@ -231,10 +249,11 @@ static id _instance;
 }
 
 - (void)hy_viewDidLoad {}
-- (void)hy_viewWillAppear:(BOOL)animated {}
-- (void)hy_viewWillLayoutSubviews {}
-- (void)hy_viewDidLayoutSubviews {}
-- (void)hy_viewDidAppear:(BOOL)animated {}
+
+- (void)hy_viewWillAppear:(BOOL)animated firstLoad:(BOOL)flag {}
+- (void)hy_viewDidAppear:(BOOL)animated firstLoad:(BOOL)flag {}
+- (void)hy_viewWillLayoutSubviewsIsFirstLoad:(BOOL)flag {}
+- (void)hy_viewDidLayoutSubviewsIsFirstLoad:(BOOL)flag {}
 - (void)hy_viewWillDisappear:(BOOL)animated {}
 - (void)hy_viewDidDisappear:(BOOL)animated {}
 
@@ -249,73 +268,73 @@ static id _instance;
     return [state integerValue];
 }
 
-- (void)setHy_viewDidLoadBlock:(BOOL (^)(UIViewController *))hy_viewDidLoadBlock {
+- (void)setHy_viewDidLoadBlock:(void (^)(UIViewController *))hy_viewDidLoadBlock {
     objc_setAssociatedObject(self,
                              @selector(hy_viewDidLoadBlock),
                              hy_viewDidLoadBlock,
                              OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
-- (BOOL (^)(UIViewController *))hy_viewDidLoadBlock {
+- (void (^)(UIViewController *))hy_viewDidLoadBlock {
     return objc_getAssociatedObject(self, _cmd);
 }
 
-- (void)setHy_viewWillAppearBlock:(BOOL (^)(UIViewController *, BOOL))hy_viewWillAppearBlock {
+- (void)setHy_viewWillAppearBlock:(void (^)(UIViewController *, BOOL, BOOL))hy_viewWillAppearBlock {
     objc_setAssociatedObject(self,
                              @selector(hy_viewWillAppearBlock),
                              hy_viewWillAppearBlock,
                              OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
-- (BOOL (^)(UIViewController *, BOOL))hy_viewWillAppearBlock {
+- (void (^)(UIViewController *, BOOL, BOOL))hy_viewWillAppearBlock {
     return objc_getAssociatedObject(self, _cmd);
 }
 
-- (void)setHy_viewWillLayoutSubviewsBlock:(BOOL (^)(UIViewController *))hy_viewWillLayoutSubviewsBlock {
+- (void)setHy_viewWillLayoutSubviewsBlock:(void (^)(UIViewController *, BOOL))hy_viewWillLayoutSubviewsBlock {
     objc_setAssociatedObject(self,
                              @selector(hy_viewWillLayoutSubviewsBlock),
                              hy_viewWillLayoutSubviewsBlock,
                              OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
-- (BOOL (^)(UIViewController *))hy_viewWillLayoutSubviewsBlock {
+- (void (^)(UIViewController *, BOOL))hy_viewWillLayoutSubviewsBlock {
     return objc_getAssociatedObject(self, _cmd);
 }
 
-- (void)setHy_viewDidLayoutSubviewsBlock:(BOOL (^)(UIViewController *))hy_viewDidLayoutSubviewsBlock {
+- (void)setHy_viewDidLayoutSubviewsBlock:(void (^)(UIViewController *, BOOL))hy_viewDidLayoutSubviewsBlock {
     objc_setAssociatedObject(self,
                              @selector(hy_viewDidLayoutSubviewsBlock),
                              hy_viewDidLayoutSubviewsBlock,
                              OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
-- (BOOL (^)(UIViewController *))hy_viewDidLayoutSubviewsBlock {
+- (void (^)(UIViewController *, BOOL))hy_viewDidLayoutSubviewsBlock {
     return objc_getAssociatedObject(self, _cmd);
 }
 
-- (void)setHy_viewDidAppearBlock:(BOOL (^)(UIViewController *, BOOL))hy_viewDidAppearBlock {
+- (void)setHy_viewDidAppearBlock:(void (^)(UIViewController *, BOOL, BOOL))hy_viewDidAppearBlock {
     objc_setAssociatedObject(self,
                              @selector(hy_viewDidAppearBlock),
                              hy_viewDidAppearBlock,
                              OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
-- (BOOL (^)(UIViewController *, BOOL))hy_viewDidAppearBlock {
+- (void (^)(UIViewController *, BOOL, BOOL))hy_viewDidAppearBlock {
     return objc_getAssociatedObject(self, _cmd);
 }
 
-- (void)setHy_viewWillDisappearBlock:(BOOL (^)(UIViewController *, BOOL))hy_viewWillDisappearBlock {
+- (void)setHy_viewWillDisappearBlock:(void (^)(UIViewController *, BOOL))hy_viewWillDisappearBlock {
     objc_setAssociatedObject(self,
                              @selector(hy_viewWillDisappearBlock),
                              hy_viewWillDisappearBlock,
                              OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
-- (BOOL (^)(UIViewController *, BOOL))hy_viewWillDisappearBlock {
+- (void (^)(UIViewController *, BOOL))hy_viewWillDisappearBlock {
     return objc_getAssociatedObject(self, _cmd);
 }
 
-- (void)setHy_viewDidDisappearBlock:(BOOL (^)(UIViewController *, BOOL))hy_viewDidDisappearBlock {
+- (void)setHy_viewDidDisappearBlock:(void (^)(UIViewController *, BOOL))hy_viewDidDisappearBlock {
     objc_setAssociatedObject(self,
                              @selector(hy_viewDidDisappearBlock),
                              hy_viewDidDisappearBlock,
                              OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
-- (BOOL (^)(UIViewController *, BOOL))hy_viewDidDisappearBlock {
+- (void (^)(UIViewController *, BOOL))hy_viewDidDisappearBlock {
     return objc_getAssociatedObject(self, _cmd);
 }
 
@@ -328,6 +347,50 @@ static id _instance;
 
 - (void (^)(id _Nonnull))hy_reloadControllerBlock {
    return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setHy_willAppearFirstLoad:(BOOL)hy_willAppearFirstLoad {
+        objc_setAssociatedObject(self,
+                                 @selector(hy_willAppearFirstLoad),
+                                 @(hy_willAppearFirstLoad),
+                                 OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (BOOL)hy_willAppearFirstLoad {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
+
+- (void)setHy_didAppearFirstLoad:(BOOL)hy_didAppearFirstLoad {
+    objc_setAssociatedObject(self,
+                             @selector(hy_didAppearFirstLoad),
+                             @(hy_didAppearFirstLoad),
+                             OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (BOOL)hy_didAppearFirstLoad {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
+
+- (void)setHy_WillLayoutSubviewsFirstLoad:(BOOL)hy_WillLayoutSubviewsFirstLoad {
+        objc_setAssociatedObject(self,
+                                 @selector(hy_WillLayoutSubviewsFirstLoad),
+                                 @(hy_WillLayoutSubviewsFirstLoad),
+                                 OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (BOOL)hy_WillLayoutSubviewsFirstLoad {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
+}
+
+- (void)setHy_didLayoutSubviewsFirstLoad:(BOOL)hy_didLayoutSubviewsFirstLoad {
+        objc_setAssociatedObject(self,
+                                 @selector(hy_didLayoutSubviewsFirstLoad),
+                                 @(hy_didLayoutSubviewsFirstLoad),
+                                 OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (BOOL)hy_didLayoutSubviewsFirstLoad {
+    return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 
 @end

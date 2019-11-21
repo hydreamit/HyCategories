@@ -389,6 +389,19 @@ NSArray<NSString *> *hy_getProtocolList(Class cls) {
     return protocolList;
 }
 
+BOOL hy_checkClass(NSString *className) {
+    if (!className.length) {
+        return NO;
+    }
+    
+    const char *classNameChar = [className cStringUsingEncoding:NSASCIIStringEncoding];
+    Class newClass = objc_getClass(classNameChar);
+    if (!newClass) {
+        return NO;
+    }
+    return YES;
+}
+
 BOOL hy_checkIvar(Class cls , NSString *ivar) {
     
     if (!cls || !ivar) { return NO;}
