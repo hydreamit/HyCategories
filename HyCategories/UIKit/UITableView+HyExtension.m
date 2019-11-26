@@ -487,6 +487,8 @@ forRowAtIndexPath:(NSIndexPath *)indexPath{
         if ([self isArrayWithData:sectionData]) {
             if (section < ((NSArray *)sectionData).count) {
                 cellData = ((NSArray *)sectionData)[section];
+            } else {
+                return @[].mutableCopy;
             }
         }
         

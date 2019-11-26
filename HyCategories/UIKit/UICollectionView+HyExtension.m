@@ -418,6 +418,8 @@ willDisplaySupplementaryView:(UICollectionReusableView *)view
         if ([self isArrayWithData:sectionData]) {
             if (section < ((NSArray *)sectionData).count) {
                 cellData = ((NSArray *)sectionData)[section];
+            } else {
+                return @[].mutableCopy;
             }
         }
         
