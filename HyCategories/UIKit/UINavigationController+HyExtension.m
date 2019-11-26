@@ -284,9 +284,7 @@
         hy_swizzleAndResetInstanceMethodToBlock(viewController.class,sel_registerName("viewDidAppear:") , ^id(SEL sel, IMP (^impBlock)(void), void (^resetImpBlock)(void)) {
             return ^(UIViewController *_self, BOOL animated) {
                 HyVoidImpFuctoin(_self, sel, animated);
-                if (_self == viewController) {
-                    completion();
-                }
+                completion();
                 resetImpBlock();
             };
         });
