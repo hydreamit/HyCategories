@@ -65,7 +65,7 @@ static id _instance;
                 HyVoidImpFuctoin(_self, sel, animated);
                 
                 if (_self.hy_popGestureState == HyPopGestureState_No) {
-                    [_self hy_viewWillAppear:animated firstLoad:_self.hy_willAppearFirstLoad];
+                    [_self hy_viewWillAppear:animated firstLoad:!_self.hy_willAppearFirstLoad];
                     if (!_self.hy_willAppearFirstLoad) {
                         _self.hy_willAppearFirstLoad = YES;
                     }
@@ -79,7 +79,7 @@ static id _instance;
                 HyVoidImpFuctoin(_self, sel, animated);
 
                 if (_self.hy_popGestureState == HyPopGestureState_No) {
-                    [_self hy_viewDidAppear:animated firstLoad:_self.hy_didAppearFirstLoad];
+                    [_self hy_viewDidAppear:animated firstLoad:!_self.hy_didAppearFirstLoad];
                     if (!_self.hy_didAppearFirstLoad) {
                         _self.hy_didAppearFirstLoad = YES;
                      }
@@ -93,7 +93,7 @@ static id _instance;
                 HyVoidImpFuctoin(_self, sel);
                 
                 if (_self.hy_popGestureState == HyPopGestureState_No) {
-                    [_self hy_viewWillLayoutSubviewsIsFirstLoad:_self.hy_WillLayoutSubviewsFirstLoad];
+                    [_self hy_viewWillLayoutSubviewsIsFirstLoad:!_self.hy_WillLayoutSubviewsFirstLoad];
                     if (!_self.hy_WillLayoutSubviewsFirstLoad) {
                        _self.hy_WillLayoutSubviewsFirstLoad = YES;
                     }
@@ -107,7 +107,7 @@ static id _instance;
                 HyVoidImpFuctoin(_self, sel);
                 
                 if (_self.hy_popGestureState == HyPopGestureState_No) {
-                    [_self hy_viewDidLayoutSubviewsIsFirstLoad:_self.hy_didLayoutSubviewsFirstLoad];
+                    [_self hy_viewDidLayoutSubviewsIsFirstLoad:!_self.hy_didLayoutSubviewsFirstLoad];
                     if (!_self.hy_didLayoutSubviewsFirstLoad) {
                         _self.hy_didLayoutSubviewsFirstLoad = YES;
                     }
