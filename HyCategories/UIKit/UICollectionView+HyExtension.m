@@ -481,9 +481,15 @@ willDisplaySupplementaryView:(UICollectionReusableView *)view
 
 @interface UICollectionView ()
 @property (nonatomic,strong) HyCollectionViewDelegateConfigure *hy_delegateConfigure;
-@property (nonatomic,strong) UIView *hy_emtyContainerView;
 @end
 @implementation UICollectionView (HyExtension)
+
++ (void)load {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        hy_swizzleInstanceMethods([self class],@[@"reloadData"]);
+    });
+}
 
 + (instancetype)hy_collectionViewWithFrame:(CGRect)frame
                                     layout:(UICollectionViewLayout *)layout

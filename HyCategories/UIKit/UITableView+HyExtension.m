@@ -547,7 +547,6 @@ forRowAtIndexPath:(NSIndexPath *)indexPath{
 
 @interface UITableView ()
 @property (nonatomic,strong) HyTableViewDelegateConfigure *hy_delegateConfigure;
-@property (nonatomic,strong) UIView *hy_emtyContainerView;
 @end
 @implementation UITableView (HyExtension)
 
