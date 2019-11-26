@@ -52,6 +52,9 @@
                                                                        id sectionData,
                                                                        HyTableSeactionViewKinds seactionViewKinds,
                                                                        NSUInteger section))block;
+
+- (instancetype)configEmtyView:(void(^)(UITableView *tableView,UIView *emtyContainerView))block;
+
 @end
 
 

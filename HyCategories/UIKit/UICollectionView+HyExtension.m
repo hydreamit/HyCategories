@@ -33,6 +33,7 @@
 @property (nonatomic,copy) void(^cellWithData)(UICollectionViewCell *cell, id cellData, NSIndexPath *indexPath);
 @property (nonatomic,copy) Class(^sectionHeaderFooterViewClassAtSection)(id sectionData,HyCollectionSeactionViewKinds seactionViewKinds,NSUInteger section);
 @property (nonatomic,copy) void(^sectionHeaderFooterViewWithSectionData)(UIView *headerFooterView,id sectionData,HyCollectionSeactionViewKinds seactionViewKinds,NSUInteger section);
+@property (nonatomic,copy) void(^emtyViewBlock)(UICollectionView *,UIView *);
 
 @property (nonatomic,weak) UICollectionView *collectionView;
 @property (nonatomic,copy) NSString *cellDataKey;
@@ -125,6 +126,11 @@
                                                                        HyCollectionSeactionViewKinds seactionViewKinds,
                                                                        NSUInteger section))block {
     self.sectionHeaderFooterViewWithSectionData = [block copy];
+    return self;
+}
+
+- (instancetype)configEmtyView:(void(^)(UICollectionView *tableView, UIView *emtyContainerView))block {
+    self.emtyViewBlock = [block copy];
     return self;
 }
 
@@ -473,6 +479,7 @@ willDisplaySupplementaryView:(UICollectionReusableView *)view
 
 @interface UICollectionView ()
 @property (nonatomic,strong) HyCollectionViewDelegateConfigure *hy_delegateConfigure;
+@property (nonatomic,strong) UIView *hy_emtyContainerView;
 @end
 @implementation UICollectionView (HyExtension)
 
@@ -587,6 +594,32 @@ willDisplaySupplementaryView:(UICollectionReusableView *)view
 - (void)hy_handleReloadData {
     !self.hy_willReloadDataHandler ?: self.hy_willReloadDataHandler(self);
     [self hy_reloadData];
+    
+    if (self.hy_delegateConfigure.emtyViewBlock) {
+        
+        NSInteger sectionCount =
+        self.hy_delegateConfigure.numberOfSections ?
+        self.hy_delegateConfigure.numberOfSections(self) :
+        [self.hy_delegateConfigure getSectionCount];
+        
+        if (sectionCount <= 1) {
+            
+            NSInteger cellCount =
+            self.hy_delegateConfigure.numberOfItemsInSection ?
+            self.hy_delegateConfigure.numberOfItemsInSection(self, 0) :
+            [self.hy_delegateConfigure getCellCountInSection:0];
+            
+            if (cellCount == 0) {
+                self.hy_emtyContainerView.hidden = NO;
+                self.hy_delegateConfigure.emtyViewBlock(self,self.hy_emtyContainerView);
+            } else {
+                self.hy_emtyContainerView.hidden = YES;
+            }
+        } else {
+            self.hy_emtyContainerView.hidden = YES;
+        }
+    }
+    
     !self.hy_didReloadDataHandler ?: self.hy_didReloadDataHandler(self);
 }
 
@@ -738,6 +771,21 @@ willDisplaySupplementaryView:(UICollectionReusableView *)view
 
 - (void (^)(UICollectionView *collectionView))hy_didReloadDataHandler {
     return objc_getAssociatedObject(self, _cmd);
+}
+
+- (UIView *)hy_emtyContainerView {
+    
+    UIView *emtyView = objc_getAssociatedObject(self, _cmd);
+    if (!emtyView) {
+        emtyView = UIView.new;
+        emtyView.backgroundColor = self.backgroundColor;
+        emtyView.frame = CGRectMake(self.contentInset.left, self.contentInset.top, self.bounds.size.width - self.contentInset.left - self.contentInset.right, self.bounds.size.height - self.contentInset.top - self.contentInset.bottom);
+        emtyView.hidden = YES;
+        [self addSubview:emtyView];
+        [self bringSubviewToFront:emtyView];
+        objc_setAssociatedObject(self, _cmd, emtyView, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    }
+    return emtyView;
 }
 
 @end

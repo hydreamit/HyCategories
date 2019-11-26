@@ -45,6 +45,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                                        id sectionData,
                                                                        HyCollectionSeactionViewKinds seactionViewKinds,
                                                                        NSUInteger section))block;
+
+- (instancetype)configEmtyView:(void(^)(UICollectionView *tableView, UIView *emtyContainerView))block;
+
 @end
 
 
