@@ -18,7 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,weak,readonly,nullable) UIViewController *hy_poppingViewController;
 @property (nonatomic,assign,readonly,nullable) UIPanGestureRecognizer  *hy_popGestureRecognizer;
 
-- (nullable UIViewController *)hy_viewControllerAtIndex:(NSInteger)index;
+- (nullable UIViewController *)hy_viewControllerFromIndex:(NSInteger)index;
+- (nullable UIViewController *)hy_viewControllerToIndex:(NSInteger)index;
 - (nullable UIViewController *)hy_viewControllerWithName:(NSString *)name;
 
 - (void)hy_popToViewControllerWithName:(NSString *)name animated:(BOOL)animated;

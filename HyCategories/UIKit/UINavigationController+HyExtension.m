@@ -148,12 +148,16 @@
     return self.viewControllers.firstObject;
 }
 
-- (nullable UIViewController *)hy_viewControllerAtIndex:(NSInteger)index {
-    
+
+- (nullable UIViewController *)hy_viewControllerFromIndex:(NSInteger)index {
     if (index >= 0 && index < self.childViewControllers.count) {
         return [self.childViewControllers objectAtIndex:index];
     }
     return nil;
+}
+
+- (nullable UIViewController *)hy_viewControllerToIndex:(NSInteger)index {
+    return [self hy_viewControllerFromIndex:self.viewControllers.count - 1 - index];
 }
 
 - (nullable UIViewController *)hy_viewControllerWithName:(NSString *)name {
@@ -178,7 +182,7 @@
 
 - (void)hy_popToViewControllerWithToIndex:(NSInteger)index animated:(BOOL)animated {
     
-    UIViewController *vc = [self hy_viewControllerAtIndex:index];
+    UIViewController *vc = [self hy_viewControllerFromIndex:index];
     if (vc) {
         [self popToViewController:vc animated:animated];
     }
@@ -186,7 +190,7 @@
 
 - (void)hy_popToViewControllerWithFromIndex:(NSInteger)index animated:(BOOL)animated {
     
-    UIViewController *vc = [self hy_viewControllerAtIndex:self.childViewControllers.count - index - 1];
+    UIViewController *vc = [self hy_viewControllerFromIndex:self.childViewControllers.count - index - 1];
     if (vc) {
         [self popToViewController:vc animated:animated];
     }
@@ -204,7 +208,7 @@
 
 - (void)hy_removeViewControllerFromIndex:(NSInteger)index {
     
-    UIViewController *vc = [self hy_viewControllerAtIndex:index];
+    UIViewController *vc = [self hy_viewControllerFromIndex:index];
     if (vc) {
         NSMutableArray *arr = self.viewControllers.mutableCopy;
         [arr removeObject:vc];
@@ -213,7 +217,7 @@
 }
 - (void)hy_removeViewControllerToIndex:(NSInteger)index {
  
-    UIViewController *vc = [self hy_viewControllerAtIndex:self.childViewControllers.count - index - 1];
+    UIViewController *vc = [self hy_viewControllerFromIndex:self.childViewControllers.count - index - 1];
     if (vc) {
         NSMutableArray *arr = self.viewControllers.mutableCopy;
         [arr removeObject:vc];
