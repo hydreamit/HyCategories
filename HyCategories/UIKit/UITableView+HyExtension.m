@@ -707,6 +707,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath{
                
                if (cellCount == 0) {
                    self.hy_emtyContainerView.hidden = NO;
+                   [self.hy_emtyContainerView.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
                    self.hy_delegateConfigure.emtyViewBlock(self,self.hy_emtyContainerView);
                } else {
                    self.hy_emtyContainerView.hidden = YES;
@@ -830,7 +831,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath{
     if (!emtyView) {
         emtyView = UIView.new;
         emtyView.backgroundColor = self.backgroundColor;
-        emtyView.frame = CGRectMake(self.contentInset.left, self.contentInset.top, self.bounds.size.width - self.contentInset.left - self.contentInset.right, self.bounds.size.height - self.contentInset.top - self.contentInset.bottom);
+        emtyView.frame = CGRectMake(self.contentInset.left, self.contentInset.top, self.bounds.size.width - self.contentInset.left - self.contentInset.right, self.bounds.size.height - self.contentInset.top - self.contentInset.bottom - self.adjustedContentInset.top - self.adjustedContentInset.bottom);
         emtyView.hidden = YES;
         [self addSubview:emtyView];
         [self bringSubviewToFront:emtyView];
