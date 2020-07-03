@@ -127,9 +127,11 @@
     };
 }
 
-- (instancetype)configHeightForFooterInSection:(CGFloat (^)(UITableView *tableView,NSInteger section))block {
-    self.heightForFooterInSection = [block copy];
-    return self;
+- (HyTableViewDelegateConfigure *(^)(CGFloat (^)(UITableView *, NSInteger)))configHeightForFooterInSection {
+    return ^(CGFloat (^block)(UITableView *, NSInteger)){
+        self.heightForFooterInSection = [block copy];
+        return self;
+    };
 }
 
 - (HyTableViewDelegateConfigure *(^)(UIView *(^)(UITableView *, NSInteger)))configViewForFooterInSection {
