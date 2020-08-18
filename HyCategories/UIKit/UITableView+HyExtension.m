@@ -266,8 +266,9 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView
          cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
+    UITableViewCell *cell = nil;
     if (self.cellForRowAtIndexPath) {
-        return self.cellForRowAtIndexPath(tableView, indexPath);
+        cell = self.cellForRowAtIndexPath(tableView, indexPath);
     } else {
         
         Class cellClass;
@@ -280,11 +281,13 @@
                 cellClass = array.firstObject;
             };
         }
-        return
+        cell =
         cellClass ? [cellClass hy_cellWithTableView:tableView
                                           indexPath:indexPath
                                            cellData:cellData] : nil;
     }
+    [cell hy_reloadCellData];
+    return cell;
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell
@@ -296,7 +299,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     self.cellWithData ?
     self.cellWithData(cell, [self getCellDataAtIndexPath:indexPath], indexPath) : nil;
     
-    [cell hy_reloadCellData];
+//    [cell hy_reloadCellData];
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {

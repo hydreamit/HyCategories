@@ -203,8 +203,9 @@
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView
                   cellForItemAtIndexPath:(NSIndexPath *)indexPath {
 
+    UICollectionViewCell *cell = nil;
     if (self.cellForItemAtIndexPath) {
-        return self.cellForItemAtIndexPath(collectionView, indexPath);
+        cell = self.cellForItemAtIndexPath(collectionView, indexPath);
     } else {
         
         Class cellClass;
@@ -217,11 +218,15 @@
                 cellClass = array.firstObject;
             };
         }
-        return
+        cell =
         cellClass ? [cellClass hy_cellWithCollectionView:collectionView
                                                indexPath:indexPath
                                                 cellData:cellData] : nil;
     }
+    
+    [cell hy_reloadCellData];;
+    return cell;
+    
 }
 
 - (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell
@@ -233,7 +238,7 @@
     self.cellWithData ?
     self.cellWithData(cell, [self getCellDataAtIndexPath:indexPath], indexPath) : nil;
     
-    [cell hy_reloadCellData];
+//    [cell hy_reloadCellData];
 }
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView
