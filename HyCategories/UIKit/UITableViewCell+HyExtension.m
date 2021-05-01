@@ -23,7 +23,6 @@
     dispatch_once(&onceToken, ^{
 
         hy_swizzleInstanceMethodToBlock([self class], @selector(initWithStyle:reuseIdentifier:), ^id(SEL sel, IMP (^impBlock)(void)) {
-           
             return ^UITableViewCell *(UITableViewCell *_self, UITableViewCellStyle style, NSString *reuseIdentifier) {
                 _self = HyObjectImpFuctoin(_self, sel, style, reuseIdentifier);
                 [_self hy_cellLoad];

@@ -11,6 +11,7 @@
 
 
 @interface HyScrollViewDelegateConfigure : NSObject
+@property (nonatomic,copy,readonly) HyScrollViewDelegateConfigure *(^addDelegateMethod)(NSString *method, id (^)(void));
 @property (nonatomic,copy,readonly) HyScrollViewDelegateConfigure *(^configScrollViewDidScroll)(void (^)(UIScrollView *scrollView));
 @property (nonatomic,copy,readonly) HyScrollViewDelegateConfigure *(^configScrollViewDidZoom)(void (^)(UIScrollView *scrollView));
 @property (nonatomic,copy,readonly) HyScrollViewDelegateConfigure *(^configScrollViewWillBeginDragging)(void (^)(UIScrollView *scrollView));

@@ -31,176 +31,212 @@
 
 @implementation HyScrollViewDelegateConfigure
 
-- (HyScrollViewDelegateConfigure *(^)(void (^)(UIScrollView *)))configScrollViewDidScroll {
-    return ^(void (^block)(UIScrollView *)){
-        self.scrollViewDidScroll = [block copy];
+- (HyScrollViewDelegateConfigure *(^)(NSString *, id (^)(void)))addDelegateMethod {
+    __weak typeof(self) _self = self;
+    return ^(NSString *selString, id (^impBlock)(void)) {
+        __strong typeof(_self) self = _self;
+        SEL sel = sel_registerName(selString.UTF8String);
+        Method method = class_getInstanceMethod([self class], sel);
+        if (!method) {
+            if (impBlock) {
+                class_addMethod(self.class, sel, imp_implementationWithBlock(impBlock()), "v@:@");
+            }
+        }
         return self;
+    };
+}
+
+- (HyScrollViewDelegateConfigure *(^)(void (^)(UIScrollView *)))configScrollViewDidScroll {
+    __weak typeof(self) _self = self;
+    return ^(void (^block)(UIScrollView *)) {
+        __strong typeof(_self) self = _self;
+        self.scrollViewDidScroll = [block copy];
+        return self.addDelegateMethod(@"scrollViewDidScroll:", ^id {
+            return ^(HyScrollViewDelegateConfigure *_self, UIScrollView *_scrollview) {
+                !_self.scrollViewDidScroll ?:_self.scrollViewDidScroll(_scrollview);
+            };
+        });
     };
 }
 
 - (HyScrollViewDelegateConfigure *(^)(void (^)(UIScrollView *)))configScrollViewDidZoom {
-    return ^(void (^block)(UIScrollView *)){
+    __weak typeof(self) _self = self;
+    return ^(void (^block)(UIScrollView *)) {
+        __strong typeof(_self) self = _self;
         self.scrollViewDidZoom = [block copy];
-        return self;
+        return self.addDelegateMethod(@"scrollViewDidZoom:", ^id {
+            return ^(HyScrollViewDelegateConfigure *_self, UIScrollView *_scrollview) {
+                !_self.scrollViewDidZoom ?:_self.scrollViewDidZoom(_scrollview);
+            };
+        });
     };
 }
 
 - (HyScrollViewDelegateConfigure *(^)(void (^)(UIScrollView *)))configScrollViewWillBeginDragging {
-    return ^(void (^block)(UIScrollView *)){
+    __weak typeof(self) _self = self;
+    return ^(void (^block)(UIScrollView *)) {
+        __strong typeof(_self) self = _self;
         self.scrollViewWillBeginDragging = [block copy];
-        return self;
+        return self.addDelegateMethod(@"scrollViewWillBeginDragging:", ^id {
+            return ^(HyScrollViewDelegateConfigure *_self, UIScrollView *_scrollview) {
+                !_self.scrollViewWillBeginDragging ?:_self.scrollViewWillBeginDragging(_scrollview);
+            };
+        });
     };
 }
 
 - (HyScrollViewDelegateConfigure *(^)(void (^)(UIScrollView *)))configScrollViewWillBeginDecelerating {
-    return ^(void (^block)(UIScrollView *)){
+    __weak typeof(self) _self = self;
+    return ^(void (^block)(UIScrollView *)) {
+        __strong typeof(_self) self = _self;
         self.scrollViewWillBeginDecelerating = [block copy];
-        return self;
+        return self.addDelegateMethod(@"scrollViewWillBeginDecelerating:", ^id {
+            return ^(HyScrollViewDelegateConfigure *_self, UIScrollView *_scrollview) {
+                !_self.scrollViewWillBeginDecelerating ?:_self.scrollViewWillBeginDecelerating(_scrollview);
+            };
+        });
     };
 }
 
 - (HyScrollViewDelegateConfigure *(^)(void (^)(UIScrollView *)))configScrollViewDidEndDecelerating {
-    return ^(void (^block)(UIScrollView *)){
+    __weak typeof(self) _self = self;
+    return ^(void (^block)(UIScrollView *)) {
+        __strong typeof(_self) self = _self;
         self.scrollViewDidEndDecelerating = [block copy];
-        return self;
+        return self.addDelegateMethod(@"scrollViewDidEndDecelerating:", ^id {
+            return ^(HyScrollViewDelegateConfigure *_self, UIScrollView *_scrollview) {
+                !_self.scrollViewDidEndDecelerating ?:_self.scrollViewDidEndDecelerating(_scrollview);
+            };
+        });
     };
 }
 
 - (HyScrollViewDelegateConfigure *(^)(void (^)(UIScrollView *)))configScrollViewDidEndScrollingAnimation {
-    return ^(void (^block)(UIScrollView *)){
+    __weak typeof(self) _self = self;
+    return ^(void (^block)(UIScrollView *)) {
+        __strong typeof(_self) self = _self;
         self.scrollViewDidEndScrollingAnimation = [block copy];
-        return self;
+        return self.addDelegateMethod(@"scrollViewDidEndScrollingAnimation:", ^id {
+            return ^(HyScrollViewDelegateConfigure *_self, UIScrollView *_scrollview) {
+                !_self.scrollViewDidEndScrollingAnimation ?:_self.scrollViewDidEndScrollingAnimation(_scrollview);
+            };
+        });
     };
 }
 
 - (HyScrollViewDelegateConfigure *(^)(void (^)(UIScrollView *)))configScrollViewDidScrollToTop {
-    return ^(void (^block)(UIScrollView *)){
+    __weak typeof(self) _self = self;
+    return ^(void (^block)(UIScrollView *)) {
+        __strong typeof(_self) self = _self;
         self.scrollViewDidScrollToTop = [block copy];
-        return self;
+        return self.addDelegateMethod(@"scrollViewDidScrollToTop:", ^id {
+            return ^(HyScrollViewDelegateConfigure *_self, UIScrollView *_scrollview) {
+                !_self.scrollViewDidScrollToTop ?:_self.scrollViewDidScrollToTop(_scrollview);
+            };
+        });
     };
 }
 
 - (HyScrollViewDelegateConfigure *(^)(void (^)(UIScrollView *)))configScrollViewDidChangeAdjustedContentInset {
-    return ^(void (^block)(UIScrollView *)){
+    __weak typeof(self) _self = self;
+    return ^(void (^block)(UIScrollView *)) {
+        __strong typeof(_self) self = _self;
         self.scrollViewDidChangeAdjustedContentInset = [block copy];
-        return self;
+        return self.addDelegateMethod(@"scrollViewDidChangeAdjustedContentInset:", ^id {
+            return ^(HyScrollViewDelegateConfigure *_self, UIScrollView *_scrollview) {
+                !_self.scrollViewDidChangeAdjustedContentInset ?:_self.scrollViewDidChangeAdjustedContentInset(_scrollview);
+            };
+        });
     };
 }
 
 
 - (HyScrollViewDelegateConfigure *(^)(BOOL (^)(UIScrollView *)))configScrollViewShouldScrollToTop {
-    return ^(BOOL (^block)(UIScrollView *)){
+    __weak typeof(self) _self = self;
+    return ^(BOOL (^block)(UIScrollView *)) {
+        __strong typeof(_self) self = _self;
         self.scrollViewShouldScrollToTop = [block copy];
-        return self;
+        return self.addDelegateMethod(@"scrollViewShouldScrollToTop:", ^id {
+            return ^BOOL(HyScrollViewDelegateConfigure *_self, UIScrollView *_scrollview) {
+                return !_self.scrollViewShouldScrollToTop ? YES :_self.scrollViewShouldScrollToTop(_scrollview);
+            };
+        });
     };
 }
 
 - (HyScrollViewDelegateConfigure *(^)(UIView *(^)(UIScrollView *)))configScrollViewForZoomingInScrollView {
-    return ^(UIView *(^block)(UIScrollView *scrollView)){
+    __weak typeof(self) _self = self;
+    return ^(UIView *(^block)(UIScrollView *scrollView)) {
+        __strong typeof(_self) self = _self;
         self.viewForZoomingInScrollView = [block copy];
-        return self;
+        return self.addDelegateMethod(@"configScrollViewForZoomingInScrollView:", ^id {
+            return ^UIView *(HyScrollViewDelegateConfigure *_self, UIScrollView *_scrollview) {
+                return !_self.viewForZoomingInScrollView ? nil :_self.viewForZoomingInScrollView(_scrollview);
+            };
+        });
     };
 }
 
 - (HyScrollViewDelegateConfigure *(^)(void (^)(UIScrollView *, UIView *)))configScrollViewWillBeginZooming {
-    return ^(void (^block)(UIScrollView *, UIView *)){
+    __weak typeof(self) _self = self;
+    return ^(void (^block)(UIScrollView *, UIView *)) {
+        __strong typeof(_self) self = _self;
         self.scrollViewWillBeginZooming = [block copy];
-        return self;
+        return self.addDelegateMethod(@"scrollViewShouldScrollToTop:", ^id {
+            return ^BOOL(HyScrollViewDelegateConfigure *_self, UIScrollView *_scrollview) {
+                return !_self.scrollViewShouldScrollToTop ? YES :_self.scrollViewShouldScrollToTop(_scrollview);
+            };
+        });
     };
 }
 
 - (HyScrollViewDelegateConfigure *(^)(void (^)(UIScrollView *, UIView *, CGFloat)))configScrollViewDidEndZooming {
-    return ^(void (^block)(UIScrollView *, UIView *, CGFloat)){
+    __weak typeof(self) _self = self;
+    return ^(void (^block)(UIScrollView *, UIView *, CGFloat)) {
+        __strong typeof(_self) self = _self;
         self.scrollViewDidEndZooming = [block copy];
-        return self;
+        return self.addDelegateMethod(@"scrollViewDidEndZooming:withView:atScale:", ^id {
+            return ^(HyScrollViewDelegateConfigure *_self, UIScrollView *_scrollview, UIView *view, CGFloat scale) {
+               !_self.scrollViewDidEndZooming ?:_self.scrollViewDidEndZooming(_scrollview, view, scale);
+            };
+        });
     };
 }
 
 - (HyScrollViewDelegateConfigure *(^)(void (^)(UIScrollView *, CGPoint, CGPoint)))configScrollViewWillEndDragging {
-    return ^(void (^block)(UIScrollView *, CGPoint, CGPoint)){
+    __weak typeof(self) _self = self;
+    return ^(void (^block)(UIScrollView *, CGPoint, CGPoint)) {
+        __strong typeof(_self) self = _self;
         self.scrollViewWillEndDragging = [block copy];
-        return self;
+        return self.addDelegateMethod(@"scrollViewWillEndDragging:withVelocity:targetContentOffset:", ^id {
+            return ^(HyScrollViewDelegateConfigure *_self, UIScrollView *_scrollview, CGPoint velocity,  CGPoint * targetContentOffset) {
+               !_self.scrollViewWillEndDragging ?:_self.scrollViewWillEndDragging(_scrollview, velocity, *targetContentOffset);
+            };
+        });
     };
 }
 
 - (HyScrollViewDelegateConfigure *(^)(void (^)(UIScrollView *, BOOL)))configScrollViewDidEndDragging {
-    return ^(void (^block)(UIScrollView *, BOOL)){
+    __weak typeof(self) _self = self;
+    return ^(void (^block)(UIScrollView *, BOOL)) {
+        __strong typeof(_self) self = _self;
         self.scrollViewDidEndDragging = [block copy];
-        return self;
+        return self.addDelegateMethod(@"scrollViewDidEndDragging:willDecelerate:", ^id {
+            return ^(HyScrollViewDelegateConfigure *_self, UIScrollView *_scrollview, BOOL decelerate) {
+               !_self.scrollViewDidEndDragging ?:_self.scrollViewDidEndDragging(_scrollview, decelerate);
+            };
+        });
     };
 }
 
-#pragma mark — UIScrollViewDelegate
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    !self.scrollViewDidScroll  ?:
-    self.scrollViewDidScroll (scrollView);
-}
-
-- (void)scrollViewDidZoom:(UIScrollView *)scrollView  {
-    !self.scrollViewDidZoom  ?:
-    self.scrollViewDidZoom (scrollView);
-}
-
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
-    !self.scrollViewWillBeginDragging  ?:
-    self.scrollViewWillBeginDragging (scrollView);
-}
-
-- (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView {
-    !self.scrollViewWillBeginDecelerating  ?:
-    self.scrollViewWillBeginDecelerating (scrollView);
-}
-
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-    !self.scrollViewDidEndDecelerating  ?:
-    self.scrollViewDidEndDecelerating(scrollView);
-}
-
-- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
-    !self.scrollViewDidEndScrollingAnimation  ?:
-    self.scrollViewDidEndScrollingAnimation (scrollView);
-}
-
-- (nullable UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {
-    return
-    self.viewForZoomingInScrollView  ?
-    self.viewForZoomingInScrollView (scrollView) : nil;
-}
-
-- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset {
-    self.scrollViewWillEndDragging  ?
-    self.scrollViewWillEndDragging (scrollView, velocity, *targetContentOffset) : nil;
-}
-
-- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
-    self.scrollViewDidEndDragging  ?
-    self.scrollViewDidEndDragging (scrollView, decelerate) : nil;
-}
-
-- (void)scrollViewWillBeginZooming:(UIScrollView *)scrollView withView:(nullable UIView *)view {
-    self.scrollViewWillBeginZooming  ?
-    self.scrollViewWillBeginZooming (scrollView, view) : nil;
-}
-
-- (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(nullable UIView *)view atScale:(CGFloat)scale {
-    self.scrollViewDidEndZooming  ?
-    self.scrollViewDidEndZooming (scrollView, view, scale) : nil;
-}
-
-- (BOOL)scrollViewShouldScrollToTop:(UIScrollView *)scrollView {
-    return
-    self.scrollViewShouldScrollToTop  ?
-    self.scrollViewShouldScrollToTop (scrollView) : YES;
-}
-
-- (void)scrollViewDidScrollToTop:(UIScrollView *)scrollView {
-    !self.scrollViewDidScrollToTop  ?:
-    self.scrollViewDidScrollToTop (scrollView);
-}
-
-- (void)scrollViewDidChangeAdjustedContentInset:(UIScrollView *)scrollView {
-    !self.scrollViewDidChangeAdjustedContentInset  ?:
-    self.scrollViewDidChangeAdjustedContentInset (scrollView);
+- (void)dealloc {
+    if (![self isMemberOfClass:HyScrollViewDelegateConfigure.class] &&
+        [NSStringFromClass(self.class) hasSuffix:@"HyScrollViewDelegateConfigure_"]) {
+        Class cls = self.class;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            objc_disposeClassPair(cls);
+        });
+    }
 }
 @end
 
@@ -227,10 +263,20 @@
     if (@available(iOS 11.0, *)) {
         scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     }
-    scrollView.hy_delegateConfigure = [[HyScrollViewDelegateConfigure alloc] init];
+    scrollView.hy_delegateConfigure = scrollView.delegateInstance;
     !delegateConfigure ?: delegateConfigure(scrollView.hy_delegateConfigure);
     scrollView.delegate = scrollView.hy_delegateConfigure;
     return scrollView;
+}
+
+- (HyScrollViewDelegateConfigure *)delegateInstance {
+    const char *clasName = [[NSString stringWithFormat:@"HyScrollViewDelegateConfigure_%d_%d", arc4random() % 100, arc4random() % 100] cStringUsingEncoding:NSASCIIStringEncoding];
+    if (!objc_getClass(clasName)){
+        objc_registerClassPair(objc_allocateClassPair(HyScrollViewDelegateConfigure.class, clasName, 0));
+        return [[objc_getClass(clasName) alloc] init];;
+    } else {
+        return [self delegateInstance];
+    }
 }
 
 - (void)setHy_delegateConfigure:(HyScrollViewDelegateConfigure *)hy_delegateConfigure {

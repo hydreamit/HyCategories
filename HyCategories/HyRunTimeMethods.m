@@ -27,10 +27,16 @@ void hy_swizzleTwoClassMethods(Class fromCls, SEL fromSel, Class toCls, SEL toSe
                         method_getImplementation(toMethod),
                         method_getTypeEncoding(toMethod))) {
         
-        class_replaceMethod(toMetacls,
-                            toSel,
-                            method_getImplementation(fromMethod),
-                            method_getTypeEncoding(fromMethod));
+        if (fromMethod) {
+            class_replaceMethod(toMetacls,
+                                toSel,
+                                method_getImplementation(fromMethod),
+                                method_getTypeEncoding(fromMethod));
+        } else {
+            method_setImplementation(toMethod, imp_implementationWithBlock(^id(id _self){
+                return nil;
+            }));
+        }
         
     } else {
         
@@ -67,6 +73,17 @@ void hy_swizzleTwoInstanceMethods(Class fromCls, SEL fromSel, Class toCls, SEL t
                             toSel,
                             method_getImplementation(fromMethod),
                             method_getTypeEncoding(fromMethod));
+        
+        if (fromMethod) {
+           class_replaceMethod(toClass,
+                               toSel,
+                               method_getImplementation(fromMethod),
+                               method_getTypeEncoding(fromMethod));
+       } else  {
+           method_setImplementation(toMethod, imp_implementationWithBlock(^id(id _self){
+               return nil;
+           }));
+       }
         
     } else {
         

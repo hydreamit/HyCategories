@@ -15,7 +15,6 @@
 @property (nonatomic,copy) NSInteger(^numberOfItemsInSection)(UICollectionView *collectionView, NSInteger section);
 // cell
 @property (nonatomic,copy) UICollectionViewCell *(^cellForItemAtIndexPath)(UICollectionView *collectionView, NSIndexPath * indexPath);
-@property (nonatomic,copy) CGFloat (^heightForRowAtIndexPath)(UICollectionView *collectionView, NSIndexPath * indexPath);
 @property (nonatomic,copy) void (^didSelectItemAtIndexPath)(UICollectionView *collectionView, NSIndexPath * indexPath);
 @property (nonatomic,copy) void (^willDisplayCell)(UICollectionView *collectionView,UICollectionViewCell *cell, NSIndexPath * indexPath);
 @property (nonatomic,copy) UICollectionReusableView  *(^seactionHeaderFooterView)(UICollectionView *collectionView,NSString *kind, NSIndexPath * indexPath);
@@ -28,7 +27,7 @@
 @property (nonatomic,copy) CGSize(^layoutReferenceSizeForHeader)(UICollectionView *collectionView, UICollectionViewLayout *layout, NSInteger section);
 @property (nonatomic,copy) CGSize(^layoutReferenceSizeForFooter)(UICollectionView *collectionView, UICollectionViewLayout *layout, NSInteger section);
 
-@property (nonatomic,copy) NSArray *(^sectionAndCellDataKey)(void);
+@property (nonatomic,copy) NSArray<NSString *> *(^sectionAndCellDataKey)(void);
 @property (nonatomic,copy) Class(^cellClassForRow)(id cellData, NSIndexPath * indexPath);
 @property (nonatomic,copy) void(^cellWithData)(UICollectionViewCell *cell, id cellData, NSIndexPath *indexPath);
 @property (nonatomic,copy) Class(^sectionHeaderFooterViewClassAtSection)(id sectionData,HyCollectionSeactionViewKinds seactionViewKinds,NSUInteger section);
@@ -44,143 +43,264 @@
 @end
 @implementation HyCollectionViewDelegateConfigure
 - (HyCollectionViewDelegateConfigure *(^)(NSInteger (^)(UICollectionView *)))configNumberOfSections {
+    __weak typeof(self) _self = self;
     return ^(NSInteger (^block)(UICollectionView *)){
+        __strong typeof(_self) self = _self;
         self.numberOfSections = [block copy];
         return self;
     };
 }
-
 - (HyCollectionViewDelegateConfigure *(^)(NSInteger (^)(UICollectionView *, NSInteger)))configNumberOfItemsInSection {
+    __weak typeof(self) _self = self;
     return ^(NSInteger (^block)(UICollectionView *, NSInteger)){
+        __strong typeof(_self) self = _self;
         self.numberOfItemsInSection = [block copy];
         return self;
     };
 }
-
-// cell
 - (HyCollectionViewDelegateConfigure *(^)(UICollectionViewCell *(^)(UICollectionView *, NSIndexPath *)))configCellForItemAtIndexPath {
+    __weak typeof(self) _self = self;
     return ^(UICollectionViewCell *(^block)(UICollectionView *, NSIndexPath *)){
+        __strong typeof(_self) self = _self;
         self.cellForItemAtIndexPath = [block copy];
         return self;
     };
 }
 
-- (HyCollectionViewDelegateConfigure *(^)(CGFloat (^)(UICollectionView *, NSIndexPath *)))configHeightForRowAtIndexPath {
-    return ^(CGFloat (^block)(UICollectionView *, NSIndexPath *)){
-        self.heightForRowAtIndexPath = [block copy];
-        return self;
-    };
-}
+
+
 
 - (HyCollectionViewDelegateConfigure *(^)(void (^)(UITableView *, NSIndexPath *)))configDidSelectItemAtIndexPath {
-    return ^(void (^block)(UITableView *, NSIndexPath *)){
+    __weak typeof(self) _self = self;
+    return ^id(void (^block)(UITableView *, NSIndexPath *)){
+        __strong typeof(_self) self = _self;
         self.didSelectItemAtIndexPath = [block copy];
-        return self;
+        return self.addDelegateMethod(@"collectionView:didSelectItemAtIndexPath:", ^id {
+            return ^(HyCollectionViewDelegateConfigure *_self, UICollectionView *_collectionView, NSIndexPath *indexPath) {
+                    _self.didSelectItemAtIndexPath ?
+                    _self.didSelectItemAtIndexPath(_collectionView, indexPath) : nil;
+            };
+        });
+    };
+}
+- (HyCollectionViewDelegateConfigure *(^)(void (^)(UICollectionView *, UICollectionViewCell *, NSIndexPath *)))configWillDisplayCell {
+    __weak typeof(self) _self = self;
+    return ^id(void (^block)(UICollectionView *, UICollectionViewCell *, NSIndexPath *)) {
+        __strong typeof(_self) self = _self;
+        self.willDisplayCell = [block copy];
+        return self.addDelegateMethod(@"collectionView:willDisplayCell:forItemAtIndexPath:", ^id {
+            return ^(HyCollectionViewDelegateConfigure *_self, UICollectionView *_collectionView, UICollectionViewCell *_cell,  NSIndexPath *indexPath) {
+                    _self.willDisplayCell ?
+                    _self.willDisplayCell(_collectionView, _cell, indexPath) : nil;
+            };
+        });
     };
 }
 
-- (HyCollectionViewDelegateConfigure *(^)(void (^)(UICollectionView *, UICollectionViewCell *, NSIndexPath *)))configWillDisplayCell {
-    return ^(void (^block)(UICollectionView *, UICollectionViewCell *, NSIndexPath *)){
-        self.willDisplayCell = [block copy];
-        return self;
-    };
-}
 
 // header footer
 - (HyCollectionViewDelegateConfigure *(^)(UICollectionReusableView *(^)(UICollectionView *, NSString *, NSIndexPath *)))configSeactionHeaderFooterViewAtIndexPath {
-    return ^(UICollectionReusableView *(^block)(UICollectionView *, NSString *, NSIndexPath *)){
+    __weak typeof(self) _self = self;
+    return ^id(UICollectionReusableView *(^block)(UICollectionView *, NSString *, NSIndexPath *)) {
+        __strong typeof(_self) self = _self;
         self.seactionHeaderFooterView = [block copy];
-        return self;
+        return self.addDelegateMethod(@"collectionView:viewForSupplementaryElementOfKind:atIndexPath:", ^id {
+            return ^UICollectionReusableView *(HyCollectionViewDelegateConfigure *_self, UICollectionView *_collectionView, NSString *kind,  NSIndexPath *indexPath) {
+                return  [_self _collectionView:_collectionView viewForSupplementaryElementOfKind:kind atIndexPath:indexPath];            };
+        });
     };
 }
-             
+
 
 - (HyCollectionViewDelegateConfigure *(^)(void (^)(UICollectionView *, UICollectionReusableView *, NSString *, NSIndexPath *)))configWillDisPlayHeaderFooterViewAtIndexPath {
-    return ^(void (^block)(UICollectionView *, UICollectionReusableView *, NSString *, NSIndexPath *)){
+    __weak typeof(self) _self = self;
+    return ^id(void (^block)(UICollectionView *, UICollectionReusableView *, NSString *, NSIndexPath *)) {
+        __strong typeof(_self) self = _self;
         self.willDisPlayHeaderFooterView = [block copy];
-        return self;
+        return self.addDelegateMethod(@"collectionView:willDisplaySupplementaryView:forElementKind:atIndexPath:", ^id {
+            return ^(HyCollectionViewDelegateConfigure *_self, UICollectionView *_collectionView,UICollectionReusableView *view,  NSString *elementKind,  NSIndexPath *indexPath) {
+                
+                _self.willDisPlayHeaderFooterView ?
+                _self.willDisPlayHeaderFooterView(_collectionView,view, elementKind, indexPath) : nil;
+
+                HyCollectionSeactionViewKinds sectionKinds =
+                [elementKind isEqualToString:UICollectionElementKindSectionHeader] ?
+                HyCollectionSeactionViewKindsHeader : HyCollectionSeactionViewKindsFooter;
+
+                _self.sectionHeaderFooterViewWithSectionData ?
+                _self.sectionHeaderFooterViewWithSectionData(view,
+                                                            [_self getSectionDtaAtSection:indexPath.section],
+                                                            sectionKinds,
+                                                            indexPath.section) : nil;
+                if ([view respondsToSelector:@selector(hy_reloadHeaderFooterViewData)]) {
+                    [view hy_reloadHeaderFooterViewData];
+                }
+            };
+        });
     };
 }
 
+    
 - (HyCollectionViewDelegateConfigure *(^)(CGSize (^)(UICollectionView *, UICollectionViewLayout *, NSIndexPath *)))configLayoutSize {
-    return ^(CGSize (^block)(UICollectionView *, UICollectionViewLayout *, NSIndexPath *)){
+    __weak typeof(self) _self = self;
+    return ^id(CGSize (^block)(UICollectionView *, UICollectionViewLayout *, NSIndexPath *)) {
+        __strong typeof(_self) self = _self;
         self.layoutSize = [block copy];
-        return self;
+        return self.addDelegateMethod(@"collectionView:layout:sizeForItemAtIndexPath:", ^id {
+            return ^CGSize (HyCollectionViewDelegateConfigure *_self, UICollectionView *_collectionView, UICollectionViewLayout *collectionViewLayout,  NSIndexPath *indexPath) {
+                CGSize size = CGSizeZero;
+                if ([collectionViewLayout isKindOfClass:UICollectionViewFlowLayout.class]) {
+                    UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout *)collectionViewLayout;
+                    size = layout.itemSize;
+                }
+                return
+                _self.layoutSize ?
+                _self.layoutSize(_collectionView, collectionViewLayout, indexPath) : size;
+            };
+        });
     };
 }
-
 - (HyCollectionViewDelegateConfigure *(^)(UIEdgeInsets (^)(UICollectionView *, UICollectionViewLayout *, NSInteger)))configLayoutInsets {
-    return ^(UIEdgeInsets (^block)(UICollectionView *, UICollectionViewLayout *, NSInteger)){
+    __weak typeof(self) _self = self;
+    return ^id(UIEdgeInsets (^block)(UICollectionView *, UICollectionViewLayout *, NSInteger)){
+        __strong typeof(_self) self = _self;
         self.layoutInsets = [block copy];
-        return self;
+        return self.addDelegateMethod(@"collectionView:layout:insetForSectionAtIndex:", ^id {
+            return ^UIEdgeInsets (HyCollectionViewDelegateConfigure *_self, UICollectionView *_collectionView, UICollectionViewLayout *collectionViewLayout,  NSInteger section) {
+                UIEdgeInsets insets = UIEdgeInsetsZero;
+                if ([collectionViewLayout isKindOfClass:UICollectionViewFlowLayout.class]) {
+                    UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout *)collectionViewLayout;
+                    insets = layout.sectionInset;
+                }
+                return
+                _self.layoutInsets ?
+                _self.layoutInsets(_collectionView, collectionViewLayout, section) : insets;
+            };
+        });
     };
 }
-
 - (HyCollectionViewDelegateConfigure *(^)(CGFloat (^)(UICollectionView *, UICollectionViewLayout *, NSInteger)))configLayoutMinimumLineSpacing {
-    return ^(CGFloat (^block)(UICollectionView *, UICollectionViewLayout *, NSInteger)){
+    __weak typeof(self) _self = self;
+    return ^id(CGFloat (^block)(UICollectionView *, UICollectionViewLayout *, NSInteger)){
+        __strong typeof(_self) self = _self;
         self.layoutMinimumLineSpacing = [block copy];
-        return self;
+        return self.addDelegateMethod(@"collectionView:layout:minimumLineSpacingForSectionAtIndex:", ^id {
+            return ^CGFloat (HyCollectionViewDelegateConfigure *_self, UICollectionView *_collectionView, UICollectionViewLayout *collectionViewLayout,  NSInteger section) {
+                CGFloat height = 0.0;
+                if ([collectionViewLayout isKindOfClass:UICollectionViewFlowLayout.class]) {
+                    UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout *)collectionViewLayout;
+                    height = layout.minimumLineSpacing;
+                }
+                return
+                _self.layoutMinimumLineSpacing ?
+               _self.layoutMinimumLineSpacing(_collectionView, collectionViewLayout, section) : height;
+            };
+        });
     };
 }
-
 - (HyCollectionViewDelegateConfigure *(^)(CGFloat (^)(UICollectionView *, UICollectionViewLayout *, NSInteger)))configLayoutMinimumInteritemSpacing {
-    return ^(CGFloat (^block)(UICollectionView *, UICollectionViewLayout *, NSInteger)){
+    __weak typeof(self) _self = self;
+    return ^id(CGFloat (^block)(UICollectionView *, UICollectionViewLayout *, NSInteger)){
+        __strong typeof(_self) self = _self;
         self.layoutMinimumInteritemSpacing = [block copy];
-        return self;
+        return self.addDelegateMethod(@"collectionView:layout:minimumInteritemSpacingForSectionAtIndex:", ^id {
+            return ^CGFloat (HyCollectionViewDelegateConfigure *_self, UICollectionView *_collectionView, UICollectionViewLayout *collectionViewLayout,  NSInteger section) {
+                CGFloat height = 0.0;
+                if ([collectionViewLayout isKindOfClass:UICollectionViewFlowLayout.class]) {
+                    UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout *)collectionViewLayout;
+                    height = layout.minimumInteritemSpacing;
+                }
+                return
+                _self.layoutMinimumInteritemSpacing ?
+                _self.layoutMinimumInteritemSpacing(_collectionView, collectionViewLayout, section) : height;
+            };
+        });
     };
 }
-
 - (HyCollectionViewDelegateConfigure *(^)(CGSize (^)(UICollectionView *, UICollectionViewLayout *, NSInteger)))configLayoutReferenceSizeForHeader {
-    return ^(CGSize (^block)(UICollectionView *, UICollectionViewLayout *, NSInteger)){
+    __weak typeof(self) _self = self;
+    return ^id(CGSize (^block)(UICollectionView *, UICollectionViewLayout *, NSInteger)){
+        __strong typeof(_self) self = _self;
         self.layoutReferenceSizeForHeader = [block copy];
-        return self;
+        return self.addDelegateMethod(@"collectionView:layout:referenceSizeForHeaderInSection:", ^id {
+            return ^CGSize (HyCollectionViewDelegateConfigure *_self, UICollectionView *_collectionView, UICollectionViewLayout *collectionViewLayout,  NSInteger section) {
+                CGSize size = CGSizeZero;
+                if ([collectionViewLayout isKindOfClass:UICollectionViewFlowLayout.class]) {
+                    UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout *)collectionViewLayout;
+                    size = layout.headerReferenceSize;
+                }
+                return
+                _self.layoutReferenceSizeForHeader ?
+                _self.layoutReferenceSizeForHeader(_collectionView, collectionViewLayout, section) : size;
+            };
+        });
     };
 }
-
 - (HyCollectionViewDelegateConfigure *(^)(CGSize (^)(UICollectionView *, UICollectionViewLayout *, NSInteger)))configLayoutReferenceSizeForFooter {
-    return ^(CGSize (^block)(UICollectionView *, UICollectionViewLayout *, NSInteger)){
+    __weak typeof(self) _self = self;
+    return ^id(CGSize (^block)(UICollectionView *, UICollectionViewLayout *, NSInteger)){
+        __strong typeof(_self) self = _self;
         self.layoutReferenceSizeForFooter = [block copy];
-        return self;
+        return self.addDelegateMethod(@"collectionView:layout:referenceSizeForFooterInSection:", ^id {
+            return ^CGSize (HyCollectionViewDelegateConfigure *_self, UICollectionView *_collectionView, UICollectionViewLayout *collectionViewLayout,  NSInteger section) {
+                CGSize size = CGSizeZero;
+                if ([collectionViewLayout isKindOfClass:UICollectionViewFlowLayout.class]) {
+                    UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout *)collectionViewLayout;
+                    size = layout.headerReferenceSize;
+                }
+                return
+                _self.layoutReferenceSizeForFooter ?
+                _self.layoutReferenceSizeForFooter(_collectionView, collectionViewLayout, section) : size;
+            };
+        });
     };
 }
 
-- (HyCollectionViewDelegateConfigure *(^)(NSArray *(^)(void)))configSectionAndCellDataKey {
+
+- (HyCollectionViewDelegateConfigure *(^)(NSArray<NSString *> *(^)(void)))configSectionAndCellDataKey {
+    __weak typeof(self) _self = self;
     return ^(NSArray<NSString *> *(^block)(void)){
+        __strong typeof(_self) self = _self;
         self.sectionAndCellDataKey = [block copy];
         return self;
     };
 }
-
 - (HyCollectionViewDelegateConfigure *(^)(Class (^)(id, NSIndexPath *)))configCellClassForRow {
+    __weak typeof(self) _self = self;
     return ^(Class (^block)(id, NSIndexPath *)){
+        __strong typeof(_self) self = _self;
         self.cellClassForRow = [block copy];
         return self;
     };
 }
-
 - (HyCollectionViewDelegateConfigure *(^)(void (^)(UICollectionViewCell *, id, NSIndexPath *)))configCellWithData {
+    __weak typeof(self) _self = self;
     return ^(void (^block)(UICollectionViewCell *, id, NSIndexPath *)){
+        __strong typeof(_self) self = _self;
         self.cellWithData = [block copy];
         return self;
     };
 }
-
 - (HyCollectionViewDelegateConfigure *(^)(Class (^)(id, HyCollectionSeactionViewKinds, NSUInteger)))configSectionHeaderFooterViewClassAtSection {
+    __weak typeof(self) _self = self;
     return ^(Class (^block)(id, HyCollectionSeactionViewKinds, NSUInteger)){
+        __strong typeof(_self) self = _self;
         self.sectionHeaderFooterViewClassAtSection = [block copy];
         return self;
     };
 }
-
 - (HyCollectionViewDelegateConfigure *(^)(void (^)(UIView *, id, HyCollectionSeactionViewKinds, NSUInteger)))configSectionHeaderFooterViewWithSectionData {
+    __weak typeof(self) _self = self;
     return ^(void (^block)(UIView *, id, HyCollectionSeactionViewKinds, NSUInteger)){
+        __strong typeof(_self) self = _self;
         self.sectionHeaderFooterViewWithSectionData = [block copy];
         return self;
     };
 }
-
 - (HyCollectionViewDelegateConfigure *(^)(void (^)(UICollectionView *, UIView *)))configEmtyView {
+    __weak typeof(self) _self = self;
     return ^(void (^block)(UICollectionView *, UIView *)){
+        __strong typeof(_self) self = _self;
         self.emtyViewBlock = [block copy];
         return self;
     };
@@ -203,7 +323,7 @@
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView
                   cellForItemAtIndexPath:(NSIndexPath *)indexPath {
 
-    UICollectionViewCell *cell = nil;
+    UICollectionViewCell *cell;
     if (self.cellForItemAtIndexPath) {
         cell = self.cellForItemAtIndexPath(collectionView, indexPath);
     } else {
@@ -224,26 +344,17 @@
                                                 cellData:cellData] : nil;
     }
     
-    [cell hy_reloadCellData];;
+    if (cell) {
+        self.cellWithData ?
+        self.cellWithData(cell, [self getCellDataAtIndexPath:indexPath], indexPath) : nil;
+        [cell hy_reloadCellData];
+    }
     return cell;
-    
 }
 
-- (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell
-    forItemAtIndexPath:(NSIndexPath *)indexPath {
-    
-    self.willDisplayCell ?
-    self.willDisplayCell(collectionView,cell, indexPath) : nil;
-    
-    self.cellWithData ?
-    self.cellWithData(cell, [self getCellDataAtIndexPath:indexPath], indexPath) : nil;
-    
-//    [cell hy_reloadCellData];
-}
-
-- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView
-           viewForSupplementaryElementOfKind:(NSString *)kind
-                                 atIndexPath:(NSIndexPath *)indexPath {
+- (UICollectionReusableView *)_collectionView:(UICollectionView *)collectionView
+             viewForSupplementaryElementOfKind:(NSString *)kind
+                                   atIndexPath:(NSIndexPath *)indexPath {
     
     if (self.seactionHeaderFooterView) {
         return self.seactionHeaderFooterView(collectionView, kind, indexPath);
@@ -268,7 +379,7 @@
         }
         
         if (class_isMetaClass(object_getClass(secionHeaderFooterClass))) {
-            return 
+            return
             [secionHeaderFooterClass hy_headerFooterViewWithCollectionView:collectionView
                                                                  indexPath:indexPath
                                                          seactionViewKinds:sectionKinds
@@ -279,104 +390,7 @@
     }
 }
 
-- (void)collectionView:(UICollectionView *)collectionView
-willDisplaySupplementaryView:(UICollectionReusableView *)view
-        forElementKind:(NSString *)elementKind
-           atIndexPath:(NSIndexPath *)indexPath {
-    
-    self.willDisPlayHeaderFooterView ?
-    self.willDisPlayHeaderFooterView(collectionView,view, elementKind, indexPath) : nil;
-    
-    HyCollectionSeactionViewKinds sectionKinds =
-    [elementKind isEqualToString:UICollectionElementKindSectionHeader] ?
-    HyCollectionSeactionViewKindsHeader : HyCollectionSeactionViewKindsFooter;
-    
-    self.sectionHeaderFooterViewWithSectionData ?
-    self.sectionHeaderFooterViewWithSectionData(view,
-                                                [self getSectionDtaAtSection:indexPath.section],
-                                                sectionKinds,
-                                                indexPath.section) : nil;
-    
-    [view hy_reloadHeaderFooterViewData];
-}
 
-- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    self.didSelectItemAtIndexPath ?
-    self.didSelectItemAtIndexPath(collectionView, indexPath) : nil;
-}
-
-#pragma mark - UICollectionViewDelegateFlowLayout
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    
-    CGSize size = CGSizeZero;
-    if ([collectionViewLayout isKindOfClass:UICollectionViewFlowLayout.class]) {
-        UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout *)collectionViewLayout;
-        size = layout.itemSize;
-    }
-    return
-    self.layoutSize ?
-    self.layoutSize(collectionView, collectionViewLayout, indexPath) : size;
-}
-
-- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
-    
-    UIEdgeInsets insets = UIEdgeInsetsZero;
-    if ([collectionViewLayout isKindOfClass:UICollectionViewFlowLayout.class]) {
-        UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout *)collectionViewLayout;
-        insets = layout.sectionInset;
-    }
-    return
-    self.layoutInsets ?
-    self.layoutInsets(collectionView, collectionViewLayout, section) : insets;
-}
-
-- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
-    
-    CGFloat height = 0.0;
-    if ([collectionViewLayout isKindOfClass:UICollectionViewFlowLayout.class]) {
-        UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout *)collectionViewLayout;
-        height = layout.minimumLineSpacing;
-    }
-    return
-    self.layoutMinimumLineSpacing ?
-    self.layoutMinimumLineSpacing(collectionView, collectionViewLayout, section) : height;
-}
-
-- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
-    
-    CGFloat height = 0.0;
-    if ([collectionViewLayout isKindOfClass:UICollectionViewFlowLayout.class]) {
-        UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout *)collectionViewLayout;
-        height = layout.minimumInteritemSpacing;
-    }
-    return
-    self.layoutMinimumInteritemSpacing ?
-    self.layoutMinimumInteritemSpacing(collectionView, collectionViewLayout, section) : height;
-}
-
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section {
-    
-    CGSize size = CGSizeZero;
-    if ([collectionViewLayout isKindOfClass:UICollectionViewFlowLayout.class]) {
-        UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout *)collectionViewLayout;
-        size = layout.headerReferenceSize;
-    }
-    return
-    self.layoutReferenceSizeForHeader ?
-    self.layoutReferenceSizeForHeader(collectionView, collectionViewLayout, section) : size;
-}
-
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section {
-    
-    CGSize size = CGSizeZero;
-    if ([collectionViewLayout isKindOfClass:UICollectionViewFlowLayout.class]) {
-        UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout *)collectionViewLayout;
-        size = layout.headerReferenceSize;
-    }
-    return
-    self.layoutReferenceSizeForFooter ?
-    self.layoutReferenceSizeForFooter(collectionView, collectionViewLayout, section) : size;
-}
 
 - (NSInteger)getSectionCount {
     
@@ -452,9 +466,6 @@ willDisplaySupplementaryView:(UICollectionReusableView *)view
 - (id)getSectionData {
     
     NSString *sectionKey = [self getSectionKey];
-    if (![sectionKey isKindOfClass:NSString.class]) {
-        return sectionKey;
-    }
     if (sectionKey.length && sectionKey.length) {
         NSArray *keys = [sectionKey componentsSeparatedByString:@"."];
         id data = self.hy_collectionViewData;
@@ -471,9 +482,6 @@ willDisplaySupplementaryView:(UICollectionReusableView *)view
 - (id)getCellKeyDataWithSection:(NSInteger)section {
     
     NSString *cellKey = [self getCellKey];
-    if (![cellKey isKindOfClass:NSString.class]) {
-        return cellKey;
-    }
     if (self.hy_collectionViewData && cellKey.length) {
         
         id sectionData = [self getSectionData] ?: self.hy_collectionViewData;
@@ -505,6 +513,7 @@ willDisplaySupplementaryView:(UICollectionReusableView *)view
     return nil;
 }
 
+
 - (NSString *)getSectionKey {
     if (self.sectionAndCellDataKey) {
         return self.sectionAndCellDataKey().firstObject;
@@ -533,11 +542,19 @@ willDisplaySupplementaryView:(UICollectionReusableView *)view
     return ![self isArrayWithData:data];
 }
 
-
 - (id)hy_collectionViewData {
     return self.collectionView.hy_collectionViewData;
 }
 
+- (void)dealloc {
+    if (![self isMemberOfClass:HyCollectionViewDelegateConfigure.class] &&
+        [NSStringFromClass(self.class) hasSuffix:@"HyCollectionViewDelegateConfigure_"]) {
+        Class cls = self.class;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            objc_disposeClassPair(cls);
+        });
+    }
+}
 @end
 
 
@@ -598,7 +615,7 @@ willDisplaySupplementaryView:(UICollectionReusableView *)view
     [colletionView hy_registerCellWithCellClasses:cellClasses];
     [colletionView hy_registerHeaderWithViewClasses:headerViewClasses];
     [colletionView hy_registerFooterWithViewClasses:footerViewClasses];
-    colletionView.hy_delegateConfigure = [[HyCollectionViewDelegateConfigure alloc] init];
+    colletionView.hy_delegateConfigure = [colletionView delegateInstance];
     !delegateConfigure ?: delegateConfigure(colletionView.hy_delegateConfigure);
     colletionView.hy_delegateConfigure.collectionView = colletionView;
     colletionView.hy_delegateConfigure.cellClasses = cellClasses;
@@ -608,6 +625,16 @@ willDisplaySupplementaryView:(UICollectionReusableView *)view
     colletionView.delegate = colletionView.hy_delegateConfigure;
     [colletionView hy_colletionViewLoad];
     return colletionView;
+}
+
+- (HyCollectionViewDelegateConfigure *)delegateInstance {
+    const char *clasName = [[NSString stringWithFormat:@"HyCollectionViewDelegateConfigure_%d_%d", arc4random() % 100, arc4random() % 100] cStringUsingEncoding:NSASCIIStringEncoding];
+    if (!objc_getClass(clasName)){
+        objc_registerClassPair(objc_allocateClassPair(HyCollectionViewDelegateConfigure.class, clasName, 0));
+        return [[objc_getClass(clasName) alloc] init];;
+    } else {
+        return [self delegateInstance];
+    }
 }
 
 - (void)hy_colletionViewLoad {}
