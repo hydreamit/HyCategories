@@ -69,11 +69,6 @@ void hy_swizzleTwoInstanceMethods(Class fromCls, SEL fromSel, Class toCls, SEL t
                         method_getImplementation(toMethod),
                         method_getTypeEncoding(toMethod))) {
         
-        class_replaceMethod(toClass,
-                            toSel,
-                            method_getImplementation(fromMethod),
-                            method_getTypeEncoding(fromMethod));
-        
         if (fromMethod) {
            class_replaceMethod(toClass,
                                toSel,
